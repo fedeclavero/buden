@@ -360,29 +360,42 @@
 }());
 
 /* ===================================================
-   COUNTER: starts at 10h, counts up every second
+   COUNTER: starts at 300h, counts up every second, NEVER RESETS
 =================================================== */
 (function () {
   var el = document.getElementById('counter');
-  var total = 10 * 3600;
+  
+  // Base initial REQUIRED: 300 hours
+  const BASE_HOURS = 300;
+  // --- FECHA DE INICIO GLOBAL Y ETERNA ---
+  // Establecemos una fecha absoluta. Desde este momento exacto en el tiempo, 
+  // el contador avanzará igual para TODO el mundo y jamás se reiniciará.
+  const absoluteStartTime = new Date("2026-03-16T00:00:00-03:00").getTime();
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
-  function render() {
-    var h = Math.floor(total / 3600);
-    var m = Math.floor((total % 3600) / 60);
-    var s = total % 60;
-    el.textContent = pad(h) + 'h ' + pad(m) + 'm ' + pad(s) + 's';
+
+  function updateTimer() {
+    const now = Date.now();
+    const elapsed = Math.floor((now - absoluteStartTime) / 1000);
+    const totalSeconds = (BASE_HOURS * 3600) + elapsed;
+    
+    var h = Math.floor(totalSeconds / 3600);
+    var m = Math.floor((totalSeconds % 3600) / 60);
+    var s = totalSeconds % 60;
+    
+    // No pad for hours because it is >= 300
+    el.textContent = h + 'h ' + pad(m) + 'm ' + pad(s) + 's';
   }
+
   function tick() {
-    total++;
-    render();
+    updateTimer();
     el.classList.remove('tick');
     void el.offsetWidth;
     el.classList.add('tick');
     setTimeout(function () { el.classList.remove('tick'); }, 300);
   }
 
-  render();
+  updateTimer();
   setInterval(tick, 1000);
 }());
 </script>
