@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wasted on Buden</title>
+    <!-- Fonts inspired by LoL (Cinzel for titles, Roboto for UI text) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* LoL Hextech Color Palette */
+            --bg-color-dark: #010a13;
+            --bg-color-light: #0a1428;
+            --gold-primary: #c8aa6e;
+            --gold-secondary: #785a28;
+            --gold-bright: #f0e6d2;
+            --magic-cyan: #0ac8b9;
+            --magic-cyan-glow: rgba(10, 200, 185, 0.4);
+            --danger-red: #c62828;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color-dark);
+            color: var(--gold-primary);
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /* Subtle background pattern */
+            background-image: radial-gradient(circle at center, var(--bg-color-light) 0%, var(--bg-color-dark) 100%);
+        }
+
+        /* Magical Background effects */
+        .bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60vw;
+            height: 60vw;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, var(--magic-cyan-glow) 0%, transparent 70%);
+            opacity: 0.3;
+            animation: pulse-glow 6s infinite alternate ease-in-out;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .ambient-light {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(200, 170, 110, 0.05) 0%, transparent 30%);
+            z-index: 1;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.2; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.5; }
+        }
+
+        /* Particle system */
+        .particles-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--magic-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--magic-cyan), 0 0 20px var(--magic-cyan);
+            opacity: 0;
+            animation: float-up linear infinite;
+        }
+
+        .particle.gold {
+            background: var(--gold-bright);
+            box-shadow: 0 0 10px var(--gold-primary), 0 0 20px var(--gold-primary);
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        /* Main UI Container */
+        .ui-container {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(135deg, rgba(10, 20, 40, 0.85) 0%, rgba(1, 10, 19, 0.95) 100%);
+            border: 2px solid var(--gold-secondary);
+            padding: 4rem 5rem;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), 
+                        inset 0 0 50px rgba(10, 200, 185, 0.05);
+            animation: container-float 8s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Ornate Corners (Hextech Style) */
+        .ui-container::before, .ui-container::after,
+        .corner-bottom-left, .corner-bottom-right {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--gold-bright);
+            z-index: 11;
+            transition: all 0.3s ease;
+        }
+
+        .ui-container::before {
+            top: -2px; left: -2px;
+            border-right: none; border-bottom: none;
+        }
+        .ui-container::after {
+            top: -2px; right: -2px;
+            border-left: none; border-bottom: none;
+        }
+        .corner-bottom-left {
+            bottom: -2px; left: -2px;
+            border-right: none; border-top: none;
+        }
+        .corner-bottom-right {
+            bottom: -2px; right: -2px;
+            border-left: none; border-top: none;
+        }
+
+        .ui-container:hover::before, .ui-container:hover::after,
+        .ui-container:hover .corner-bottom-left, .ui-container:hover .corner-bottom-right {
+            box-shadow: 0 0 15px var(--gold-primary);
+            border-color: #fff;
+        }
+
+        @keyframes container-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Title Styling */
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            color: var(--gold-bright);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 15px rgba(200, 170, 110, 0.6), 0 0 30px rgba(200, 170, 110, 0.3);
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Decorative divider */
+        .divider {
+            height: 2px;
+            width: 80%;
+            margin: 1.5rem auto;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+            position: relative;
+        }
+        
+        .divider::after {
+            content: '♦';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--magic-cyan);
+            font-size: 1.5rem;
+            text-shadow: 0 0 15px var(--magic-cyan);
+            animation: pulse-gem 2s infinite alternate;
+        }
+
+        @keyframes pulse-gem {
+            0% { text-shadow: 0 0 5px var(--magic-cyan); transform: translate(-50%, -50%) scale(0.9); }
+            100% { text-shadow: 0 0 25px var(--magic-cyan), 0 0 40px #fff; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(1, 10, 19, 0.7);
+            border: 1px solid var(--gold-secondary);
+            border-left: 4px solid var(--magic-cyan);
+            border-right: 4px solid var(--magic-cyan);
+            padding: 1.2rem 3rem;
+            margin: 2rem 0;
+            display: inline-block;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .info-box:hover {
+            box-shadow: 0 0 25px var(--magic-cyan-glow), inset 0 0 20px rgba(10, 200, 185, 0.2);
+            border-color: var(--gold-primary);
+        }
+
+        .info-box p {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--gold-bright);
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+        }
+
+        /* Magic hover effect for info box */
+        .info-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(10, 200, 185, 0.3), transparent);
+            transform: skewX(-25deg);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        /* Counter Wrapper */
+        .timer-wrapper {
+            margin-top: 3rem;
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 4rem;
+        }
+
+        /* Magic circles animating behind counter */
+        .magic-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 130%; height: 130%;
+            transform: translate(-50%, -50%);
+            border: 2px dashed var(--gold-secondary);
+            border-radius: 50%;
+            animation: spin 30s linear infinite;
+            z-index: 1;
+            opacity: 0.4;
+        }
+        
+        .magic-circle-inner {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 110%; height: 110%;
+            transform: translate(-50%, -50%);
+            border: 1px solid var(--magic-cyan);
+            border-radius: 50%;
+            animation: spin-reverse 20s linear infinite;
+            z-index: 1;
+            opacity: 0.6;
+            box-shadow: 0 0 20px var(--magic-cyan-glow);
+        }
+
+        @keyframes spin {
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+            100% { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+
+        .timer {
+            font-family: 'Roboto', monospace;
+            font-size: 6rem;
+            font-weight: 700;
+            color: var(--gold-bright);
+            text-shadow: 0 0 20px var(--magic-cyan-glow), 0 0 40px rgba(10, 200, 185, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timer .segment {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+        }
+
+        .timer .label {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold-primary);
+            letter-spacing: 3px;
+            margin-top: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .timer .number {
+            background: linear-gradient(to bottom, #fff, var(--gold-bright));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* Filter for glow to work with text-fill-color */
+            filter: drop-shadow(0 0 10px rgba(10, 200, 185, 0.8));
+        }
+
+        .colon {
+            position: relative;
+            top: -20px;
+            color: var(--magic-cyan);
+            font-size: 5rem;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.2; text-shadow: none; }
+            100% { opacity: 1; text-shadow: 0 0 20px var(--magic-cyan), 0 0 40px var(--magic-cyan); }
+        }
+
+        /* Interactive Button */
+        .btn-interact {
+            margin-top: 4rem;
+            background: rgba(1, 10, 19, 0.5);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-bright);
+            font-family: 'Cinzel', serif;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .btn-interact::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            background: rgba(200, 170, 110, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            z-index: -1;
+        }
+
+        .btn-interact:hover {
+            color: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(200, 170, 110, 0.6), inset 0 0 15px rgba(200, 170, 110, 0.3);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-interact:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-interact:active {
+            transform: scale(0.95);
+            border-color: var(--magic-cyan);
+            box-shadow: 0 0 30px var(--magic-cyan);
+        }
+
+        @media (max-width: 900px) {
+            .ui-container { padding: 3rem 2rem; width: 95%; }
+            .title { font-size: 3rem; }
+            .timer { font-size: 4rem; }
+            .timer .segment { min-width: 80px; }
+            .info-box p { font-size: 1.1rem; }
+        }
+
+        @media (max-width: 600px) {
+            .title { font-size: 2.2rem; }
+            .timer { font-size: 3rem; gap: 0.5rem; }
+            .timer .segment { min-width: 60px; }
+            .timer .label { font-size: 0.8rem; }
+            .colon { font-size: 3rem; top: -10px; }
+            .info-box { padding: 1rem 1.5rem; }
+            .info-box p { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-light"></div>
+    <div class="bg-glow"></div>
+    <!-- Container for dynamic particles -->
+    <div class="particles-container" id="particles"></div>
+
+    <div class="ui-container">
+        <!-- Magic Frame Corners -->
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
+        
+        <h1 class="title">Wasted on Buden</h1>
+        <div class="divider"></div>
+        
+        <div class="info-box">
+            <p>Tiempo que nos hizo perder Buden en LoL</p>
+        </div>
+
+        <div class="timer-wrapper">
+            <!-- Animated background elements for the timer -->
+            <div class="magic-circle"></div>
+            <div class="magic-circle-inner"></div>
+            
+            <div class="timer">
+                <div class="segment">
+                    <span class="number" id="hours">300</span>
+                    <span class="label">Horas</span>
+                </div>
+                <span class="colon">:</span>
+                <div class="segment">
+                    <span class="number" id="minutes">00</span>
+                    <span class="label">Min</span>
+                </div>
+                <span class="colon">:</span>
+                <div class="segment">
+                    <span class="number" id="seconds">00</span>
+                    <span class="label">Seg</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <!-- A fun interaction button -->
+            <button class="btn-interact" onclick="addPain()">Añadir Dolor (+1 Hora)</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Generador de Partículas Mágicas ---
+        const particleContainer = document.getElementById('particles');
+        const particleCount = 60;
+
+        for (let i = 0; i < particleCount; i++) {
+            createParticle();
+        }
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // 30% chance for gold particles, 70% for cyan magic
+            if (Math.random() > 0.7) {
+                particle.classList.add('gold');
+            }
+            
+            // Randomize size, position, and animation timing
+            const size = Math.random() * 5 + 2; 
+            const left = Math.random() * 100;
+            const animDuration = Math.random() * 15 + 8; // 8 to 23 seconds
+            const animDelay = Math.random() * 15; // Random start delay
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${left}%`;
+            particle.style.animationDuration = `${animDuration}s`;
+            particle.style.animationDelay = `${animDelay}s`;
+            
+            particleContainer.appendChild(particle);
+        }
+
+        // --- 2. Lógica del Contador de Tiempo ---
+        // Base inicial requerida: 300 horas
+        const BASE_HOURS = 300;
+        const BASE_SECONDS = BASE_HOURS * 3600;
+        
+        // Usamos localStorage para que el contador no se reinicie si actualizan la página (persistencia)
+        let startTime = localStorage.getItem('buden_start_time');
+        let extraSeconds = parseInt(localStorage.getItem('buden_extra_seconds') || '0');
+
+        // Si es la primera vez que entran, guardamos el momento actual como inicio
+        if (!startTime) {
+            startTime = Date.now();
+            localStorage.setItem('buden_start_time', startTime);
+        }
+
+        const elHours = document.getElementById('hours');
+        const elMinutes = document.getElementById('minutes');
+        const elSeconds = document.getElementById('seconds');
+
+        function updateTimer() {
+            const now = Date.now();
+            // Segundos transcurridos desde que se abrió la página por primera vez
+            const elapsed = Math.floor((now - startTime) / 1000);
+            
+            // Segundos totales (300h + transcurridos + añadidos manualmente)
+            const totalSeconds = BASE_SECONDS + elapsed + extraSeconds;
+
+            // Calcular H, M, S
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+
+            // Formatear añadiendo ceros a la izquierda para minutos y segundos
+            elHours.textContent = h;
+            elMinutes.textContent = String(m).padStart(2, '0');
+            elSeconds.textContent = String(s).padStart(2, '0');
+        }
+
+        // --- 3. Interacción Extra (Botón de "Añadir Dolor") ---
+        function addPain() {
+            extraSeconds += 3600; // Añadir 1 hora extra en segundos
+            localStorage.setItem('buden_extra_seconds', extraSeconds);
+            updateTimer();
+            
+            // Efecto visual rápido en el botón
+            const btn = document.querySelector('.btn-interact');
+            const originalColor = btn.style.color;
+            const originalBorder = btn.style.borderColor;
+            
+            btn.style.color = 'var(--danger-red)';
+            btn.style.borderColor = 'var(--danger-red)';
+            btn.style.textShadow = '0 0 20px var(--danger-red)';
+            
+            // Sacudir el contenedor para darle más impacto
+            const container = document.querySelector('.ui-container');
+            container.style.transform = 'translateY(5px) scale(0.99)';
+            
+            setTimeout(() => {
+                btn.style.color = originalColor;
+                btn.style.borderColor = originalBorder;
+                btn.style.textShadow = '';
+                container.style.transform = '';
+            }, 150);
+        }
+
+        // Inicializar el contador al cargar y actualizar cada segundo
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
